@@ -130,26 +130,26 @@ void BedGenomeCoverage::StartNewChrom(const string& newChrom) {
 }
 
 
-void BedGenomeCoverage::AddCoverage(CHRPOS start, CHRPOS end) {
+void BedGenomeCoverage::AddCoverage(CHRPOS start, CHRPOS end, float depth) {
     // process the first line for this chromosome.
     // make sure the coordinates fit within the chrom 
     if (start < _currChromSize)
-        _currChromCoverage[start].starts++;
+        _currChromCoverage[start].starts += depth;
     if (end >= 0 && end < _currChromSize)
-        _currChromCoverage[end].ends++;
+        _currChromCoverage[end].ends += depth;
     else
-        _currChromCoverage[_currChromSize-1].ends++;
+        _currChromCoverage[_currChromSize-1].ends += depth;
 }
 
 
-void BedGenomeCoverage::AddBlockedCoverage(const vector<BED> &bedBlocks) {
+void BedGenomeCoverage::AddBlockedCoverage(const vector<BED> &bedBlocks, float depth) {
     vector<BED>::const_iterator bedItr = bedBlocks.begin();
     vector<BED>::const_iterator bedEnd = bedBlocks.end();
     for (; bedItr != bedEnd; ++bedItr) {
         // the end - 1 must be done because BamAncillary::getBamBlocks
         // returns ends uncorrected for the genomeCoverageBed data structure.
         // ugly, but necessary.
-        AddCoverage(bedItr->start, bedItr->end - 1);
+        AddCoverage(bedItr->start, bedItr->end - 1, depth);
     }
 }
 
@@ -294,6 +294,10 @@ void BedGenomeCoverage::CoverageBam(string bamFile) {
         string chrom(refs.at(bam.RefID).RefName);
         CHRPOS start = bam.Position;
         CHRPOS end = bam.GetEndPosition(false, false) - 1;
+        float depth;
+        if (!bam.GetTag("ZW", depth)) {
+            depth = 1.0;
+        }
 
         // are we on a new chromosome?
         if ( chrom != _currChromName )

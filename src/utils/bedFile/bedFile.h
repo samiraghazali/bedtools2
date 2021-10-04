@@ -61,8 +61,8 @@ const BIN _numBins = (1 << (_binNextShift * _binLevels)) / ((1 << _binNextShift)
 //*************************************************
 
 struct DEPTH {
-    UINT starts;
-    UINT ends;
+    float starts;
+    float ends;
 };
 
 

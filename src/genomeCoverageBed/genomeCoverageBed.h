@@ -102,8 +102,8 @@ private:
     void ReportChromCoverageBedGraph(const vector<DEPTH> &chromCov, const CHRPOS &chromSize, const string &chrom);
     void ResetChromCoverage();
     void StartNewChrom (const string& chrom);
-    void AddCoverage (CHRPOS start, CHRPOS end);
-    void AddBlockedCoverage(const vector<BED> &bedBlocks);
+    void AddCoverage (CHRPOS start, CHRPOS end, float depth = 1.0);
+    void AddBlockedCoverage(const vector<BED> &bedBlocks, float depth = 1.0);
     void PrintFinalCoverage();
     void PrintEmptyChromosomes();
     void PrintTrackDefinitionLine();
