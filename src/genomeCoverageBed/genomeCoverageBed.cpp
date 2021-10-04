@@ -331,20 +331,20 @@ void BedGenomeCoverage::CoverageBam(string bamFile) {
             } else */
 
             if (bam.IsFirstMate() && bam.IsReverseStrand()) { //prolong to the mate to the left
-                AddCoverage(bam.MatePosition, end);
+                AddCoverage(bam.MatePosition, end, depth);
             }
             else if (bam.IsFirstMate() && bam.IsMateReverseStrand()) { //prolong to the mate to the right
-                AddCoverage(start, start + abs(bam.InsertSize) - 1);
+                AddCoverage(start, start + abs(bam.InsertSize) - 1, depth);
             }
         } else if (_haveSize) {
             if(bam.IsReverseStrand()) {
                 if(end<_fragmentSize) { //sometimes fragmentSize is bigger :(
-                    AddCoverage(0, end);
+                    AddCoverage(0, end, depth);
                 } else {
-                    AddCoverage(end + 1 - _fragmentSize, end );
+                    AddCoverage(end + 1 - _fragmentSize, end, depth);
                 }
             } else {
-                AddCoverage(start,start+_fragmentSize - 1);
+                AddCoverage(start, start+_fragmentSize - 1, depth);
             }
         } else
         // add coverage accordingly.
@@ -357,11 +357,11 @@ void BedGenomeCoverage::CoverageBam(string bamFile) {
         }
         else if (_only_5p_end) {
             CHRPOS pos = ( !bam.IsReverseStrand() ) ? start : end;
-            AddCoverage(pos,pos);
+            AddCoverage(pos, pos, depth);
         }
         else if (_only_3p_end) {
             CHRPOS pos = ( bam.IsReverseStrand() ) ? start : end;
-            AddCoverage(pos,pos);
+            AddCoverage(pos, pos, depth);
         }
     }
     // close the BAM
