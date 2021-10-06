@@ -353,7 +353,7 @@ void BedGenomeCoverage::CoverageBam(string bamFile) {
             // if the user invokes -ignoreD, we want to ignore D ops (breakOnDeletionOps == !_ignoreD).
             // if the user invokes -split, we want to also split on N ops.
             GetBamBlocks(bam, refs.at(bam.RefID).RefName, bedBlocks, !_ignoreD, _obeySplits);
-            AddBlockedCoverage(bedBlocks);
+            AddBlockedCoverage(bedBlocks, depth);
         }
         else if (_only_5p_end) {
             CHRPOS pos = ( !bam.IsReverseStrand() ) ? start : end;
@@ -382,7 +382,7 @@ void BedGenomeCoverage::CoverageBam(string bamFile) {
 void BedGenomeCoverage::ReportChromCoverage(const vector<DEPTH> &chromCov, const CHRPOS &chromSize, const string &chrom, chromHistMap &chromDepthHist) {
 
     if (_eachBase) {
-        int depth = 0; // initialize the depth
+        float depth = 0; // initialize the depth
         CHRPOS offset = (_eachBaseZeroBased)?0:1;
         for (CHRPOS pos = 0; pos < chromSize; pos++) {
 
@@ -398,7 +398,7 @@ void BedGenomeCoverage::ReportChromCoverage(const vector<DEPTH> &chromCov, const
     }
     else {
 
-        int depth = 0; // initialize the depth
+        float depth = 0; // initialize the depth
 
         for (CHRPOS pos = 0; pos < chromSize; pos++) {
 
@@ -419,7 +419,7 @@ void BedGenomeCoverage::ReportChromCoverage(const vector<DEPTH> &chromCov, const
         histMap::const_iterator depthIt = chromDepthHist[chrom].begin();
         histMap::const_iterator depthEnd = chromDepthHist[chrom].end();
         for (; depthIt != depthEnd; ++depthIt) {
-            int depth = depthIt->first;
+            float depth = depthIt->first;
             unsigned int numBasesAtDepth = depthIt->second;
             cout << chrom << "\t" << depth << "\t" << numBasesAtDepth << "\t"
                 << chromSize << "\t" << (float) ((float)numBasesAtDepth / (float)chromSize) << endl;
@@ -454,7 +454,7 @@ void BedGenomeCoverage::ReportGenomeCoverage(chromHistMap &chromDepthHist) {
     for (chromHistMap::iterator chromIt = chromDepthHist.begin(); chromIt != chromDepthHist.end(); ++chromIt) {
         string chrom = chromIt->first;
         for (histMap::iterator depthIt = chromDepthHist[chrom].begin(); depthIt != chromDepthHist[chrom].end(); ++depthIt) {
-            int depth = depthIt->first;
+            float depth = depthIt->first;
             CHRPOS numBasesAtDepth = depthIt->second;
             genomeHist[depth] += numBasesAtDepth;
         }
@@ -464,7 +464,7 @@ void BedGenomeCoverage::ReportGenomeCoverage(chromHistMap &chromDepthHist) {
     // and report the number and fraction of bases in
     // the entire genome that are at said depth.
     for (histMap::iterator genomeDepthIt = genomeHist.begin(); genomeDepthIt != genomeHist.end(); ++genomeDepthIt) {
-        int depth = genomeDepthIt->first;
+        float depth = genomeDepthIt->first;
         CHRPOS numBasesAtDepth = genomeDepthIt->second;
 
         cout << "genome" << "\t" << depth << "\t" << numBasesAtDepth << "\t"
@@ -475,9 +475,9 @@ void BedGenomeCoverage::ReportGenomeCoverage(chromHistMap &chromDepthHist) {
 
 void BedGenomeCoverage::ReportChromCoverageBedGraph(const vector<DEPTH> &chromCov, const CHRPOS &chromSize, const string &chrom) {
 
-    int depth = 0; // initialize the depth
+    float depth = 0; // initialize the depth
     CHRPOS lastStart = -1;
-    int lastDepth = -1;
+    float lastDepth = -1;
 
     for (CHRPOS pos = 0; pos < chromSize; pos++) {
         depth += chromCov[pos].starts;

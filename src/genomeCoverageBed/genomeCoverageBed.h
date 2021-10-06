@@ -30,7 +30,7 @@ using namespace std;
 typedef map<int, DEPTH, less<int> > depthMap;
 typedef map<string, depthMap, less<string> > chromDepthMap;
 
-typedef map<int, unsigned int, less<int> > histMap;
+typedef map<float, unsigned int, less<float> > histMap;
 typedef map<string, histMap, less<string> > chromHistMap;
 
 //************************************************
